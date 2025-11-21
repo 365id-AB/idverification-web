@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>365id web SDK example</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>The id Verification transaction was completed</h1>
+
+            <p>You have successfully completed an id verification transaction</p>
+            <p>Transaction Id: <span id="transactionId"></p>
+
+            <a href="/">Start Over</a>
+        </div>
+
+        <script>
+            // Read URL parameters
+            const params = new URLSearchParams(window.location.search);
+
+            // Get specific parameter
+            const tid = params.get("transactionId");
+
+            // Display it inside the page
+            document.getElementById("transactionId").textContent = tid;
+        </script>
+    </body>
+</html>

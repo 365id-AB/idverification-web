@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>365id web SDK example</title>
+</head>
+<body>
+  <div id="scanItem"></div>
+
+   <script type="module">
+    import { IdVerification365Id } from "./vendor/index.js";
+
+    const verification = new IdVerification365Id()
+
+    const appToken = "{{ app_token }}";
+
+    // Read URL parameters
+    const params = new URLSearchParams(window.location.search);
+
+    // Get specific parameter
+    const startMethod = params.get("startMethod");
+
+    verification.init(
+      "scanItem",
+      window.location.origin + "/public",
+      { language: "en", countryCode: "us" },
+    );
+
+    var startOptions = {}
+    switch (startMethod) {
+      case "skip_selection":
+        startOptions.handoffConfig = {
+          mode: "current-device"
+        };
+        break;
+      case "id1":
+        startOptions.documentSizeType = 1;
+        break;
+      case "skip_module":
+       // Skipping the FaceMatch module
+       startOptions.modulesToSkip = [1]
+        break;
+
+      default:
+        break;
+    }
+    console.log(`startOptions: ${JSON.stringify(startOptions)}`)
+    var start = false;
+    try {
+      start = await verification.start({
+        accessToken: appToken,
+        startOptions: startOptions,
+        callbacks: {
+          onStarted: () => {
+            console.log("SDK is initialized successfully.");
+          },
+          onTransactionCreated: (transactionId) => {
+            console.log("The transaction is created: ", transactionId);
+          },
+          onComplete: (transactionId) => {
+            console.log("Transaction is completed, transactionId: ", transactionId);
+            verification.stop()
+            window.location.href = `/completed?transactionId=${transactionId}`;
+
+          },
+          onUserDismissed: (transactionId) => {
+            console.log("User aborted the transaction, transactionId:", transactionId);
+            verification.stop()
+            window.location.href = `/user_pressed_cancel?transactionId=${transactionId}`;
+          },
+          onError: (exception) => {
+            console.log("Error received from sdk ", exception.message);
+            verification.stop()
+            window.location.href = `/error?message=${exception.message}`;
+          },
+          onDocumentFeedback: (documentType, countryCode) => {
+            console.log("Document feedback received.");
+            console.log("Document type: " + documentType + " Country code: " + countryCode);
+          },
+          onFaceMatchFeedbackWithSource:(faceMatchStatus, faceMatchSource) => {
+            console.log("Face match feedback with source received.");
+            console.log("Face match feedback: " + faceMatchStatus + " Face match source: " + faceMatchSource);
+          }
+        }
+      })
+    } catch (error) {
+      console.error(`There was an error starting the SDK: ${error}`);
+    }
+
+    if(start) {
+        try {
+          verification.show()
+        } catch (error) {
+          console.error(`Unable to show the id verification element: ${error}`);
+        }
+
+    } else {
+      console.error("Failed to start the ID verification SDK")
+    }
+
+  </script>
+</body>
+</html>

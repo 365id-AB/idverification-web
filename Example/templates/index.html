@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>365id web SDK example</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+        <body>
+            <div class="container">
+                <h1>365id idverification WEB SDK Example</h1>
+
+                <p>You can use the buttons to start with diffrent options.</p>
+
+                <a href="/idverification?startMethod=default">Start with defaults</a><br />
+                <a href="/idverification?startMethod=skip_selection">Start with skipped selection view</a><br />
+                <a href="/idverification?startMethod=id1">Start with specific document type</a><br />
+                <a href="/idverification?startMethod=skip_module">Start with skipped module</a><br />
+            </div>
+    </body>
+</html>

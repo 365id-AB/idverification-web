@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>365id web SDK example</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="container">
+        <h1>The User canceled the verification process.</h1>
+        <p>The user most likely preseed the cancel button in the verification process.</p>
+        <p>Transaction Id: <span id="transactionId"></span></p>
+        <a href="/">Start Over</a>
+        </div>
+        <script>
+            // Read URL parameters
+            const params = new URLSearchParams(window.location.search);
+
+            // Get specific parameter
+            const tid = params.get("transactionId") ?? "no transaction id";
+
+            // Display it inside the page
+            document.getElementById("transactionId").textContent = tid;
+        </script>
+    </body>
+</html>

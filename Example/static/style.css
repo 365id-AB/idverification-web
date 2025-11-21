@@ -1,0 +1,191 @@
+/* 365id SDK example – layout & styling */
+
+/* --- Design tokens (365id-inspired palette) --- */
+:root {
+    --color-primary: #702f8A;      /* deep blue */
+    --color-primary-soft: #e5efff; /* very light blue background */
+    --color-accent:  #280020;      /* lighter blue accent */
+    --color-success: #2fbf71;      /* green (success) */
+    --color-text:    #1f2933;      /* dark grey text */
+    --color-muted:   #6b7280;      /* muted grey */
+    --color-border:  #dde3ee;
+    --color-bg:      #f3f6fb;      /* page background */
+
+    --radius-lg: 16px;
+    --radius-sm: 6px;
+
+    --shadow-soft: 0 14px 35px rgba(15, 23, 42, 0.12);
+}
+
+/* --- Global reset-ish --- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Page layout --- */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background-color: var(--color-bg);
+    background-image: url("https://365id.com/wp-content/uploads/2022/03/telecom_hero2.jpg");
+    color: var(--color-text);
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+}
+
+/* Main card */
+/* body > .page { */
+    /* If you want, wrap your content in <div class="page"> ... </div>
+       Otherwise, the fallback below will still make it look good */
+/* }*/
+
+/* Style the content even if you don’t have a .page wrapper */
+body > h1,
+body > p,
+body > a {
+    max-width: 640px;
+}
+
+/* Wrapper card (applied via a container if you want more control) */
+.container {
+    background-color: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 32px 32px 28px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--color-border);
+    max-width: 640px;
+    width: 100%;
+}
+
+/* If you don't want to touch the HTML, this targets the current structure */
+body > h1:first-of-type {
+    background-color: #ffffff;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 28px 32px 0;
+    margin: 0;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+}
+
+/*body > p:nth-of-type(1),
+body > p:nth-of-type(2),*/
+body > a[href] {
+    /*background-color: #940594;*/
+    margin: 0;
+    padding: 8px 32px;
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+}
+
+body > a[href] {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* --- Typography --- */
+h1 {
+    font-size: 1.6rem;
+    font-weight: 650;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+}
+
+p {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+}
+
+/* Highlight the success message */
+p:first-of-type {
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+/* Transaction row */
+p:nth-of-type(2) {
+    font-size: 0.95rem;
+    color: var(--color-text);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Transaction ID badge */
+#transactionId {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-width: 80px;
+}
+
+/* --- Link styled as primary button --- */
+a[href] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: var(--color-primary);
+    /* background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); */
+    border-radius: 999px;
+    padding: 10px 20px;
+    border: none;
+
+    transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, filter 0.08s ease-out;
+    box-shadow: 0 8px 20px rgba(0, 58, 131, 0.35);
+}
+
+a[href]:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+a[href]:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0, 58, 131, 0.25);
+}
+
+/* --- Small screen tweaks --- */
+@media (max-width: 600px) {
+    body {
+        padding: 16px;
+    }
+
+    body > h1:first-of-type,
+    body > p:nth-of-type(1),
+    body > p:nth-of-type(2),
+    body > a[href] {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+}

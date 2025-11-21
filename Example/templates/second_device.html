@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>365id web SDK example with transfer token</title>
+        
+    </head>
+    <body>
+        <div id="scanItem"></div>
+        <script type="module">
+            import { IdVerification365Id } from "./vendor/index.js";
+            const verification = new IdVerification365Id()
+
+                verification.init(
+                    "scanItem",
+                    window.location.origin + "/public",
+                    { language: "en", countryCode: "us" },
+                );
+
+            // Read URL parameters
+            const params = new URLSearchParams(window.location.search);
+
+            // Get specific parameter
+            const transferToken = params.get("transferToken") ?? "";
+
+            try {
+                await verification.startWithTransferToken(transferToken);
+            } catch (error) {
+                console.log(`Error: ${error}`)
+            }
+        </script>
+    </body>
+</html>
