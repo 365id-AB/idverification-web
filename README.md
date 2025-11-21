@@ -49,7 +49,7 @@ Otherwise you can contact us at [info@365id.com](mailto:info@365id.com) for furt
 
 ### Sample Application
 
-Please note that there is a [Sample Application](/SampleApp/) written in Swift using SwiftUI that demonstrates how the SDK can be used, available in this repository.
+Please note that there is a [Example Application](/Example/README.md) written in JavaScript and Python that demonstrates how the SDK can be used, available in this repository.
 
 <br/>
 <br/>
@@ -80,6 +80,8 @@ _Body - application/json_
 {
   "client_id": "string",
   "client_secret": "string"
+  "allowed_origin": "string",
+  "transfer_device_domain_url": "string" // optional if want to continue on other device
 }
 ```
 
@@ -407,8 +409,7 @@ onDocumentFeedback: (documentType: DocumentType, countryCode: string): void => {
    console.log("Document type: " + documentType + " Country code: " + countryCode);
 },
 ```
-If we are unable to identify the document, no feedback will be sent. Instead, a retry will be triggered where the user is asked to scan the document again.
-If the document is not identified after three attempts, feedback will be sent with `DocumentType` set to `Unknown` and `CountryCode` set to `empty`.
+If we are unable to identify the document, no feedback will be sent.
 
 ### Facematch feedback
 
@@ -420,8 +421,7 @@ onFaceMatchFeedbackWithSource: (faceMatchStatus: FaceMatchStatus, faceMatchSourc
    console.log("Face match feedback: " + faceMatchStatus + " Fcae match source: " + faceMatchSource);
 },
 ```
-If we are unable to match the face, no feedback will be sent. Instead, the user will be asked to perform a new facematch.
-If the facematch fails three times, feedback will be sent with `FacematchFeedback` set to `NoMatch`.
+If we are unable to match the face, feedback will be sent with `FacematchFeedback` set to `NoMatch`.
 
 <br/>
 <br/>
@@ -429,9 +429,11 @@ If the facematch fails three times, feedback will be sent with `FacematchFeedbac
 
 ## API
 
-You can find full API documentation here: [https://365id-ab.github.io/idverification-ios/documentation/idverification365id/](https://365id-ab.github.io/idverification-ios/documentation/idverification365id/)
+<br/>
+<br/>
+<br/>
 
-### local access to API documentation
+### Local access to API documentation
 
 <br />
 <br />

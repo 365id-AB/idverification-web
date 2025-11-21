@@ -11,12 +11,14 @@ this can either be started directly using python or by using the dockerfile prov
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+npm install @365id/id-verification
 python sample_app.py
 
 # On Windows
 py -3 -m venv .venv
 ./.venv/Scripts/Activate.bat
 pip install -r requirements.txt
+npm install @365id/id-verification
 python sample_app.py
 ```
 
