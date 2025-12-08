@@ -39,8 +39,13 @@
       case "skip_module":
        // Skipping the FaceMatch module
        startOptions.modulesToSkip = [1]
+       break;
+      case "custom_logo":
+        // Override the default theme logo with custom logo
+        verification.withTheme({
+          logo: window.location.origin + "/static/PoweredBy365id.svg",
+        });
         break;
-
       default:
         break;
     }

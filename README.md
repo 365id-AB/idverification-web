@@ -221,6 +221,8 @@ Documentation for that integration is not covered in this README, it is only del
 
 ## Custom Theme
 
+Before calling IdVerification365Id.start(), you can customize the SDK logo by using `IdVerification365Id.withTheme({logo: "path/to/custom/logo"})`.
+
 <br/>
 <br/>
 <br/>
