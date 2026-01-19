@@ -1,13 +1,11 @@
-![365id: To verify ID document](images/banner.png)
+![365id: To verify ID document](https://raw.githubusercontent.com/365id-AB/idverification-web/main/images/banner.png)
 
 # 365id Id Verification WEB SDK
 
-The 365id Id Verification SDK enables you to integrate 365id services into your WEB application. We also support [Android](https://github.com/365id-AB/idverification-android) and [iOS](https://github.com/365id-AB/idverification-ios)..
+The 365id Id Verification SDK enables you to integrate 365id services into your WEB application. We also support [Android](https://github.com/365id-AB/idverification-android) and [iOS](https://github.com/365id-AB/idverification-ios).
 
 The SDK supports identifying and validating ID documents such as passports, ID cards and drivers' licenses, as well as reading the text on the document and automatically mapping these to relevant fields when used in conjunction with the [365id Integration Service](https://365id.com/integrations/?lang=en).
 
-<br/>
-<br/>
 <br/>
 
 ## Registration
@@ -17,55 +15,41 @@ If you are already a customer of 365id then you can request sdk credentials by c
 Otherwise you can contact us at [info@365id.com](mailto:info@365id.com) for further information.
 
 <br/>
-<br/>
-<br/>
 
 ## Requirements
 
-- A modern browser
-- A Camera
+In order to get started with development a regular pc should be sufficient, we have an example using docker and python that will get you started easily. But docker or python is not at all a requirement.
 
-<br/>
-<br/>
+- A browser capable of running javascript modules. Chrome, Firefox and Safari all work.
+- A web camera connected to the pc.
+
 <br/>
 
 ## Project setup
 
-<br/>
-<br/>
-<br/>
+Our WEB SDK is distributed using npmjs.org and is available on request at the moment.
 
-### Package distribution
-
-<br/>
-<br/>
-<br/>
-
-#### NPM Package
-
-<br/>
-<br/>
-<br/>
+[@365id/id-verification](https://www.npmjs.com/package/@365id/id-verification)
 
 ### Sample Application
 
 Please note that there is a [Example Application](/Example/README.md) written in JavaScript and Python that demonstrates how the SDK can be used, available in this repository.
 
 <br/>
-<br/>
-<br/>
 
 ## Get started
 
 In order to use the 365id Id Verification SDK it is necessary to follow the steps below.
 
-### Retrieve a token
+### Retrieve an access token
 
-Before being able to use the 365id Id Verification SDK, you will need an access token and to get that you will need to make a Rest API call with your client id and secret. If you don't have the credentials, please contact us at [info@365id.com](mailto:info@365id.com). Once you have received the credentials you will be able to request an access token. If the access token has expired you don't have to request a new one, all you have to do is refresh it using the refresh_token endpoint.
+Before being able to use the 365id Id Verification SDK, you will need an access token and to get that you will need to make a Rest API call with your client id and secret. If you don't have the credentials (clientid and client secret), please contact us at [info@365id.com](mailto:info@365id.com). Once you have received the credentials you will be able to request an access token. If the access token has expired you don't have to request a new one, all you have to do is refresh it using the refresh_token endpoint.
 
 **Url**: https://global-customer-frontend.365id.com
 
----
+### Retrieve a session token and transaction id using the access token
+
+The session token is what the SDK uses to tell the servers it's a valid connection attempt.
 
 #### **/api/v1/access_token**
 
@@ -119,7 +103,7 @@ _Body - application/json_
 
 #### **/api/v1/refresh_token**
 
-_Used for refreshing an already retrieved access token. The access token can be or almost be expired when making this call_
+_Used for refreshing an already retrieved access token. Can be called even if your access token is expired_
 
 POST
 Request
@@ -169,62 +153,187 @@ _Body - application/json_
 
 ---
 
-The access token is valid for a certain amount of time, after that you will have to refresh the access token using the provided refresh token
+The _access token_ is valid for a short amount of time, after that you will have to refresh the _access token_ using the provided refresh token.
 
-> **⚠️ SECURITY NOTICE:** In a production app, it is recommended that you obtain the JWT token using a server-to-server call. The example app retrieves it directly for the sake of simplicity.
+If you decide to use the option __transfer_device_domain_url__ you will need to contact 365id to register this domain name if it differs from the __allowed_origin__.
 
-<br/>
+> **⚠️ SECURITY NOTICE:** In a production solution, it is strongly recommended that you obtain the _access token_ using a server-to-server call. The example shows how this can be done using a python application.
+
 <br/>
 
 ### Call the SDK
 
-<br/>
-<br/>
+#### Simple example
+
+```js
+// create the idverification sdk object.
+const idVerification = new IdVerification365Id()
+
+// Initialize the SDK with some basic information.
+idVerification.init(
+   "div_you_want_the_sdk_to_operate_on",
+   window.location.origin + "/public_file_path",
+)
+
+// Start an id verification transaction.
+var started = await idVerification.start(
+   {
+      accessToken: "the token that you get through the web server",
+      callbacks: {
+         {
+            onComplete: (transactionId) => {
+               // called when the identification process has completed
+            },
+            onUserDismissed: (transactionId) => {
+               // Called when the process is aborted by the user pressing a cancel button.
+               verification.stop() // The SDK should be stopped after the user has dissmissed the verification session.
+            },
+            onError: (exception) => {
+               // This is called when a error happens in the id verification process.
+               verification.stop() // The SDK should be stopped after an error has been reported.
+            },
+         }
+      }
+   }
+)
+
+if (started) {
+   // The id verificaton SDK started successfully.
+
+   // We tell the SDK to show its first view and take control of the supplied element identified by the provided element id.
+   idVerification.show()
+} else {
+   console.error("Unable to start the id verification SDK")
+}
+```
+---
+#### Extensive Example
+
+It is possible to set a lot of more options if that is needed. In the example below we do the following:
+
+We specify the language that should be used by the SDK in the `.init()`call.
+Then we add a theming option using the `.withTheme()`call.
+
+Finally when we call the `.start()`method.
+We tell the SDK to not show the _Selection View_ by specifying a __handOffConfig__.
+We specify what kind of document should be expected, __documentSizeType__ = 1 => id1 cards (credit card size).
+and finally we configure this transaction to skip the face matching module, by setting __modulesToSkip__.
+```js
+// Create the id verification sdk object.
+const idVerification = new IdVerification365Id()
+
+// Initialize the SDK.
+idVerification.init(
+   "div_you_want_the_sdk_to_operate_on",
+   window.location.origin + "/public_file_path",
+   {
+      language: "en",
+      countryCode: "gb"
+   }
+)
+
+// Use the `withTheme` method to replace the logo used in the SDK.
+idVerification.withTheme(logo: window.location.origin + "/path/to/your/logo.svg") // Optional call.
+
+// Start an id verification transaction with some specific options.
+var started = await idVerification.start(
+   {
+      accessToken: "the token that you get through the web server",
+      startOptions: {               // Options that can be used to customize how the SDK behaves
+         handOffConfig: {           // A handOffConfig can be supplied to skip the selection view in the SDK, the handOffConfig is made to be extendible in the future
+            mode: "current-device"  // Specific option to continue on the same device.
+         },
+         documentSizeType: 1,       // This configures the expected document type. This will alter the illustrations used in the SDK.
+         modulesToSkip: [1]         // Gives you the option to skip specific modules in the verification process. Right now only the face match module is possible to skip.
+      },
+      callbacks: {                  // functions that you define that will be called on specific event.s
+         {
+            onStarted: () => {
+               // This is called when the SDK has started successfully
+            },
+            onTransactionCreated: (transactionId) => {
+               // Called when a transactionId is available.
+            },
+            onComplete: (transactionId) => {
+               // called when the identification process has completed.
+
+            },
+            onUserDismissed: (transactionId) => {
+               // Called when the process is aborted by the user, they pressed a cancel button.
+               verification.stop() // The SDK should be stopped after the user has dissmissed the verification session.
+            },
+            onError: (exception) => {
+               // This is called when a error happens in the id verification process.
+               // A complete list of errors is available in the API documentation.
+               verification.stop() // The SDK should be stopped after an error has been reported.
+            },
+            onDocumentFeedback: (documentType, countryCode) => {
+               // This is called during the id verification process after the document image has been processed.
+               // `documentType` tells what kind of document has been identified and `countryCode` tells you the issuing country.
+            },
+            onFaceMatchFeedbackWithSource:(faceMatchStatus, faceMatchSource) => {
+               // This is called during the id verification process, after the face matching has been processed.
+               // `faceMatchStatus` tells if the matching was successfull, `faceMatchSource` tells what source image was used to perform the matching.
+            }
+         }
+      }
+   }
+)
+
+// We check if the SDK was able to start a verification process
+if (started) {
+   // The verification process was possible to start.
+   idVerification.show()   // We show the SDK views using the element id provided in the `.init()` call.
+} else {
+   console.error("Unable to start the id verification SDK")
+}
+```
+
 <br/>
 
 #### Document size type selection
 
-<br/>
-<br/>
+You are able to select the document size that you want the registered person to use. This option will alter the ilustrations used throughout the id verification process.
+
 <br/>
 
 #### Modules To Skip
 
-<br/>
-<br/>
+This option allows you to skip the face matching step on a per transaction basis.
+
 <br/>
 
 #### Using the Callbacks
 
-<br/>
-<br/>
+The callbacks offer you a direct way of acting on things that happen in the id verification process.
+
+If your user scans the wrong kind of document you are able to abort the verification process directly. This is done by using the `onDocumentFeedback` callback.
+
 <br/>
 
 ### Launch the SDK View
 
-<br/>
-<br/>
+The `show()` call is used to activate the verification process. This will cause the SDK to render in the supplied element identified by the id supplied in the `init()` call.
+The SDK is designed to use the major part of the browser window, the supplied element
+
 <br/>
 
 ### Validation of result
 
-To validate the result you will have to use an existing or a new integration with 365id Services. The data returned back contains all the extracted fields along with the captured images and the assessment of the document. The
-captured data is handled in accordance with GDPR and our official [privacy policy](https://365id.com/privacy-policy/).
+To validate the result you will have to use an already existing or a new integration with 365id API. The data returned back contains all the extracted fields along with the captured images and the assessment of the document. The captured data is handled in accordance with GDPR and our official [privacy policy](https://365id.com/privacy-policy/).
 The data retention time is configurable in our [Customer Portal](https://365id.com/integrations/), though only within the limits of the GDPR.
 
-Documentation for that integration is not covered in this README, it is only delivered on request, so please contact 365id Support at [support@365id.com](mailto:support@365id.com) for your copy.
+Documentation for the 365id API integration is not covered in this README, it is only delivered on request, so please contact 365id Support at [support@365id.com](mailto:support@365id.com) for your copy.
 
 > **:exclamation: NOTICE:** The example project does not show how to validate the result from the SDK.
 
-<br/>
 <br/>
 
 ## Custom Theme
 
 Before calling IdVerification365Id.start(), you can customize the SDK logo by using `IdVerification365Id.withTheme({logo: "path/to/custom/logo"})`.
+The theming posibilities are planned to be extended.
 
-<br/>
-<br/>
 <br/>
 
 ## Log
@@ -233,22 +342,6 @@ Before calling IdVerification365Id.start(), you can customize the SDK logo by us
 
 We are not, during any stage, collecting the users PII (Personal Identifiable Information). That includes, but are not limited to; email addresses, user names, phone number etc.
 
-#### Logging
-
-For logging we are collecting the following data to help us find and fix problems in our SDK:
-
-- SDK version
-- Vendor id
-- Device model
-- Language
-- Country code
-- Os version
-- Platform
-- Transaction Id
-- Stacktraces
-
-<br/>
-<br/>
 <br/>
 
 ## Production implementation
@@ -257,144 +350,46 @@ To implement the SDK inside your app, we recommend an implementation that follow
 
 ```mermaid
 sequenceDiagram
-    participant Customer Backend
-    participant App
-    participant SDK
-    participant 365id Backend
-    App->>Customer Backend: Request Access Token
-    activate Customer Backend
-    Customer Backend->>365id Backend: Request Token using client id and secret
-    activate 365id Backend
-    365id Backend->>Customer Backend: Access Token + Refresh Token
-    deactivate 365id Backend
+   autoNumber
+   participant R as The Registered User
+   participant B as Browser
+   participant S as WEB SDK
+   participant I as Your Web Server
+   participant F as 365id API
 
-    Customer Backend->>App: Access Token
-    deactivate Customer Backend
-    App->>SDK: Access Token + Location Data
-    activate SDK
-    loop Process Transaction
-        365id Backend->>SDK: Provide instructions for user
-        SDK->>365id Backend: Perform requested steps
-    end
-    SDK->>App: Transaction Id and status (Ok or Unsuccessful)
-    deactivate SDK
-    App->>Customer Backend: Transaction Id
-    activate Customer Backend
-    Customer Backend->>365id Backend: Request: Transaction details using Transaction Id
-    activate 365id Backend
-    365id Backend->>Customer Backend: Response: Transaction details
-    deactivate 365id Backend
-    Customer Backend->>App: Decide if user should be considered verified
-    deactivate Customer Backend
-    Note over Customer Backend, App: The Token needs to be refreshed for each transaction
-    App->>Customer Backend: Request Token
-    activate Customer Backend
-    Customer Backend->>365id Backend: Refresh Token
-    activate 365id Backend
-    365id Backend->>Customer Backend: New Access Token + New Refresh Token
-    deactivate 365id Backend
-    Customer Backend->>App: New Access Token
-    deactivate Customer Backend
-    Note over App, SDK: Now the transaction is performed as usual (see above)
+
+   R->>B: The user navigates to your site using a browser
+   B->>I: The Browser contactes your Web Server
+   activate I
+   I->>B: return(url where the WEB SDK is loaded).
+   B->>R: The browser offers the ability to verify an id document
+   deactivate I
+   R->>B: The user starts the verification process
+   B->>I: Browser call server to create SDK AccessToken
+   I->>B: return(AccessToken)
+   B->>S: Browser calls idverification.init()
+   B->>S: Browser calls idverification.start()
+   S->>B: return(true)
+   B->>S: Browser calls idverification.show()
+   Note over R, S: The SDK will take over the interaction with the user until the verification process is completed
+   S->>B: callbacks.OnComplete(Transaction Id)
+   B->>I: Browser calls your server with the Transaction Id
+   I->>F: Your server calls the 365id REST API to get the transaction result
+   F->>I: return(TransactionResult)
+   I->>B: Your server responds to the browser with the result of the verification
+   B->>R: The browser presents the result to the user
 ```
 
-In writing, this can be described as such:
-
-- App requests an access token. This can be handled either by the app directly, or as recommended by the diagram, through your backend services. Requesting the first access token requires a client id and client secret, also known as customer external id and license key. Our recommendation is to store this in your backend, and use it when requesting an access token for the first time. Subsequent access tokens for a specific device can be requested using the existing access token and a refresh token.
-- App uses the received access token to start the SDK, beginning a transaction. The SDK will take over the app until all requested steps have been completed, after which it will return a summary of the transaction result, alongside a transaction ID.
-- The transaction ID is used to poll 365id services about the details of the transaction. The recommendation here is that your backend receives this ID from the App, then makes a decision based on the result received from the 365id Backend API.
-
 <br/>
-<br/>
-<br/>
-
-## Application SDK integration flow
-
-This is a basic representation of the flow in an App, integrating the 365id Id Verification SDK together with a Customer backend. Boxes with a dashed outline are configurable steps in the process.
-
-```mermaid
-flowchart LR
-
-   subgraph APP1[APP]
-
-      user[The user interaction comes<br> to a point where<br> identification is needed]
-      id_begin[The identification flow<br>begins in the App]
-      token[An access token<br> is requested from the<br> customer backend]
-
-      user --> id_begin
-      id_begin --> token
-
-   end
-
-   subgraph CUSTOMER_BACKEND1[CUSTOMER BACKEND]
-
-      request[The customer backend makes<br> a request for an access token]
-      backend_365[The customer backend retrieves<br> an access token from the<br> 365id backend]
-      response[The access token is<br> delivered back to the App]
-
-      request --> backend_365
-      backend_365 --> response
-
-   end
-
-   subgraph APP2[APP]
-
-      valid[The app receives the<br> access token]
-      startSDK[The app now starts the<br> SDK with the access token]
-
-      valid --> startSDK
-
-   end
-
-   subgraph SDK
-
-      front[The user is asked to take<br>a picture of the document]
-      back[The user is asked to take<br>a picture of the backside<br>of the document]
-      nfc[The user is asked to place<br>the phone on the document<br>for NFC check]
-      liveness[The user is asked to perform<br> a liveness check]
-      result[A result and a transaction id is<br> returned to the App via<br> a callback]
-
-      front --> back
-      back --> nfc
-      nfc --> liveness
-      liveness --> result
-      style nfc stroke-dasharray: 8 8
-      style liveness stroke-dasharray: 8 8
-   end
-
-   subgraph APP3[APP]
-
-      callback[The app handles the callback<br> and gets the simple result<br> and the transaction id]
-      contact[The app sends the transaction id<br> to the customer backend]
-
-      callback --> contact
-
-   end
-
-   subgraph CUSTOMER_BACKEND2[CUSTOMER BACKEND]
-      transaction_id[The customer backend gets the<br> transaction id]
-      backend[The customer backend talks<br> to the 365id service and gets all<br> details extracted during the<br> id verification process]
-      outcome[The customer backend takes<br> a decision based on the outcome<br> of the verification process]
-
-      transaction_id --> backend
-      backend --> outcome
-   end
-
-   APP1 --> CUSTOMER_BACKEND1
-   CUSTOMER_BACKEND1 --> APP2
-   APP2 --> SDK
-   SDK --> APP3
-   APP3 --> CUSTOMER_BACKEND2
-```
 
 ## Retry attempts and how they impact the flow in the SDK
 
 If the identification process goes well the SDK will follow a "standard" flow, where the different steps will appear in the following order:
 
-### Document scan &rarr; NFC &rarr; Facematch
+### Document scan &rarr; Facematch
 
 However if one of the steps fails, we will deviate from the standard flow.
-For example, If we are unable to unlock the NFC-chip, the user will be asked to perform another document scan in an attempt to extract the information needed to unlock the chip.
+For example, If we are unable to capture a clear image of the document the image cpturing step will be retried.
 
 ### Early feedback and retries
 
@@ -426,20 +421,11 @@ onFaceMatchFeedbackWithSource: (faceMatchStatus: FaceMatchStatus, faceMatchSourc
 If we are unable to match the face, feedback will be sent with `FacematchFeedback` set to `NoMatch`.
 
 <br/>
-<br/>
-<br/>
 
-## API
 
 <br/>
 <br/>
 <br/>
-
-### Local access to API documentation
-
-<br />
-<br />
-<br />
 
 ## Help & support
 
