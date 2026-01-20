@@ -30,8 +30,10 @@ publish_typedoc_from_package:
     # Sync the API documentation from the triggering respository
     - mkdir -p docs
     - rsync -a --delete "artifacts/docs/" "docs/"
+    - rsync -a "artifacts/README.md" "README.md"
 
     # Add, Commit and push a new commit with the changes in the API documentation.
+    - git add README.md
     - git add "docs/"
     - git commit -m "Publishing API documentation version ${DOC_VERSION}" || echo "No changes to commit"
     - git push origin HEAD:main
