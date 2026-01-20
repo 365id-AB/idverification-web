@@ -84,6 +84,12 @@ def error():
         "error.html"
     )
 
+@app.route("/secondary_device")
+def secondary_device():
+    return render_template(
+        "secondary_device.html"
+    )
+
 @app.route("/completed")
 def completed():
     return render_template(

@@ -72,6 +72,11 @@
             verification.stop()
             window.location.href = `/user_pressed_cancel?transactionId=${transactionId}`;
           },
+          onClientConnectionLost: () => {
+            console.log("The connection to the id verification sdk running on the second device is lost.");
+            verification.stop()
+            window.location.href = "/secondary_device";
+          },
           onError: (exception) => {
             console.log("Error received from sdk ", exception.message);
             verification.stop()
