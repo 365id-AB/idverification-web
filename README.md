@@ -178,27 +178,30 @@ idVerification.init(
 // Start an id verification transaction.
 var started = await idVerification.start(
    {
-      accessToken: "the token that you get through the web server",
-      callbacks: {
-         {
-            onComplete: (transactionId) => {
-               // called when the identification process has completed
-            },
-            onUserDismissed: (transactionId) => {
-               // Called when the process is aborted by the user pressing a cancel button.
-               verification.stop() // The SDK should be stopped after the user has dissmissed the verification session.
-            },
-            onError: (exception) => {
-               // This is called when a error happens in the id verification process.
-               verification.stop() // The SDK should be stopped after an error has been reported.
-            },
+      "The token that you get through the web server", // Access token
+      {
+         onComplete: (transactionId) => {
+            // Called when the identification process has completed
+            verification.stop() // The SDK should be stopped after the transaction is completed.
+         },
+         onUserDismissed: (transactionId) => {
+            // Called when the process is aborted by the user pressing a cancel button.
+            verification.stop() // The SDK should be stopped after the user has dissmissed the verification session.
+         },
+         onError: (exception) => {
+            // This is called when a error happens in the id verification process.
+            verification.stop() // The SDK should be stopped after an error has been reported.
+         },
+         onClientConnectionLost: (): void => {
+            // This is called when the second device’s SDK connection is lost.
+            verification.stop() // The SDK should be stopped before starting a new transaction.
          }
       }
    }
 )
 
 if (started) {
-   // The id verificaton SDK started successfully.
+   // The id verification SDK started successfully.
 
    // We tell the SDK to show its first view and take control of the supplied element identified by the provided element id.
    idVerification.show()
@@ -238,45 +241,47 @@ idVerification.withTheme(logo: window.location.origin + "/path/to/your/logo.svg"
 // Start an id verification transaction with some specific options.
 var started = await idVerification.start(
    {
-      accessToken: "the token that you get through the web server",
-      startOptions: {               // Options that can be used to customize how the SDK behaves
+      "The token that you get through the web server", // Access token
+      {  // functions that you define that will be called on specific event.s
+         onStarted: () => {
+            // This is called when the SDK has started successfully
+         },
+         onTransactionCreated: (transactionId) => {
+            // Called when a transactionId is available.
+         },
+         onComplete: (transactionId) => {
+            // Called when the identification process has completed.
+            verification.stop() // The SDK should be stopped after the transaction is completed.
+         },
+         onClientConnectionLost: (): void => {
+            // This is called when the second device’s SDK connection is lost.
+            verification.stop() // The SDK should be stopped before starting a new transaction.
+         }
+         onUserDismissed: (transactionId) => {
+            // Called when the process is aborted by the user, they pressed a cancel button.
+            verification.stop() // The SDK should be stopped after the user has dissmissed the verification session.
+         },
+         onError: (exception) => {
+            // This is called when a error happens in the id verification process.
+            // A complete list of errors is available in the API documentation.
+            verification.stop() // The SDK should be stopped after an error has been reported.
+         },
+         onDocumentFeedback: (documentType, countryCode) => {
+            // This is called during the id verification process after the document image has been processed.
+            // `documentType` tells what kind of document has been identified and `countryCode` tells you the issuing country.
+         },
+         onFaceMatchFeedbackWithSource:(faceMatchStatus, faceMatchSource) => {
+            // This is called during the id verification process, after the face matching has been processed.
+            // `faceMatchStatus` tells if the matching was successfull, `faceMatchSource` tells what source image was used to perform the matching.
+         }
+      },
+      {  // Options that can be used to customize how the SDK behaves
          handOffConfig: {           // A handOffConfig can be supplied to skip the selection view in the SDK, the handOffConfig is made to be extendible in the future
             mode: "current-device"  // Specific option to continue on the same device.
          },
          documentSizeType: 1,       // This configures the expected document type. This will alter the illustrations used in the SDK.
          modulesToSkip: [1]         // Gives you the option to skip specific modules in the verification process. Right now only the face match module is possible to skip.
       },
-      callbacks: {                  // functions that you define that will be called on specific event.s
-         {
-            onStarted: () => {
-               // This is called when the SDK has started successfully
-            },
-            onTransactionCreated: (transactionId) => {
-               // Called when a transactionId is available.
-            },
-            onComplete: (transactionId) => {
-               // called when the identification process has completed.
-
-            },
-            onUserDismissed: (transactionId) => {
-               // Called when the process is aborted by the user, they pressed a cancel button.
-               verification.stop() // The SDK should be stopped after the user has dissmissed the verification session.
-            },
-            onError: (exception) => {
-               // This is called when a error happens in the id verification process.
-               // A complete list of errors is available in the API documentation.
-               verification.stop() // The SDK should be stopped after an error has been reported.
-            },
-            onDocumentFeedback: (documentType, countryCode) => {
-               // This is called during the id verification process after the document image has been processed.
-               // `documentType` tells what kind of document has been identified and `countryCode` tells you the issuing country.
-            },
-            onFaceMatchFeedbackWithSource:(faceMatchStatus, faceMatchSource) => {
-               // This is called during the id verification process, after the face matching has been processed.
-               // `faceMatchStatus` tells if the matching was successfull, `faceMatchSource` tells what source image was used to perform the matching.
-            }
-         }
-      }
    }
 )
 
@@ -415,10 +420,15 @@ This callback will provide information about the status of the facematch, either
 ```ts
 onFaceMatchFeedbackWithSource: (faceMatchStatus: FaceMatchStatus, faceMatchSource: FaceMatchSource): void => {
    console.log("Face match feedback with source received.");
-   console.log("Face match feedback: " + faceMatchStatus + " Fcae match source: " + faceMatchSource);
+   console.log("Face match feedback: " + faceMatchStatus + " Face match source: " + faceMatchSource);
 },
 ```
 If we are unable to match the face, feedback will be sent with `FacematchFeedback` set to `NoMatch`.
+
+
+## API
+
+[365id ID Verification Web API Documentation](https://365id-ab.github.io/idverification-web/)
 
 <br/>
 
