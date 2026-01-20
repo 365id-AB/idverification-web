@@ -52,10 +52,9 @@
     console.log(`startOptions: ${JSON.stringify(startOptions)}`)
     var start = false;
     try {
-      start = await verification.start({
-        accessToken: appToken,
-        startOptions: startOptions,
-        callbacks: {
+      start = await verification.start(
+        appToken,
+        {
           onStarted: () => {
             console.log("SDK is initialized successfully.");
           },
@@ -86,8 +85,9 @@
             console.log("Face match feedback with source received.");
             console.log("Face match feedback: " + faceMatchStatus + " Face match source: " + faceMatchSource);
           }
-        }
-      })
+        },
+        startOptions
+      )
     } catch (error) {
       console.error(`There was an error starting the SDK: ${error}`);
     }

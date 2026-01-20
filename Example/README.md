@@ -25,6 +25,6 @@ python sample_app.py
 ## Run using Docker
 
 ```sh
-DOCKER_BUILDKIT=1 docker build --secret id=npmrc,src=$HOME/.npmrc -t 365id/web-id-verification .
+DOCKER_BUILDKIT=1 docker build --no-cache --secret id=npmrc,src=$HOME/.npmrc -t 365id/web-id-verification .
 docker run --rm -it -p 5001:5001 365id/web-id-verification
 ```
