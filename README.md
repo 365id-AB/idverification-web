@@ -192,7 +192,7 @@ var started = await idVerification.start(
             // This is called when a error happens in the id verification process.
             verification.stop() // The SDK should be stopped after an error has been reported.
          },
-         onClientConnectionLost: (): void => {
+         onClientConnectionLost: () => {
             // This is called when the second device’s SDK connection is lost.
             verification.stop() // The SDK should be stopped before starting a new transaction.
          }
@@ -253,7 +253,7 @@ var started = await idVerification.start(
             // Called when the identification process has completed.
             verification.stop() // The SDK should be stopped after the transaction is completed.
          },
-         onClientConnectionLost: (): void => {
+         onClientConnectionLost: () => {
             // This is called when the second device’s SDK connection is lost.
             verification.stop() // The SDK should be stopped before starting a new transaction.
          }
