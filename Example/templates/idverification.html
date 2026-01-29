@@ -43,7 +43,7 @@
       case "custom_logo":
         // Override the default theme logo with custom logo
         verification.withTheme({
-          logo: window.location.origin + "/static/PoweredBy365id.svg",
+          logoUrl: window.location.origin + "/static/PoweredBy365id.svg",
         });
         break;
       default:
@@ -78,7 +78,7 @@
             window.location.href = "/secondary_device";
           },
           onError: (exception) => {
-            console.log("Error received from sdk ", exception.message);
+            console.log("Error received from sdk ", exception.integratorMessage);
             verification.stop()
             window.location.href = `/error?message=${exception.message}`;
           },
