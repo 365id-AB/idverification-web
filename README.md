@@ -243,9 +243,6 @@ var started = await idVerification.start(
    {
       "The token that you get through the web server", // Access token
       {  // functions that you define that will be called on specific event.s
-         onStarted: () => {
-            // This is called when the SDK has started successfully
-         },
          onTransactionCreated: (transactionId) => {
             // Called when a transactionId is available.
          },
