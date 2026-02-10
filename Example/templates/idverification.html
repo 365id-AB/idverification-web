@@ -12,7 +12,7 @@
 
     const verification = new IdVerification365Id()
 
-    const appToken = "{{ app_token }}";
+    const webSdkToken = "{{ web_sdk_token }}";
     const initOptions = {
       languageTag: "sv-se"
     };
@@ -55,7 +55,7 @@
     console.log(`startOptions: ${JSON.stringify(startOptions)}`)
 
     verification.start(
-      appToken,
+      webSdkToken,
       {
         onTransactionCreated: (transactionId) => {
           console.log("The transaction is created: ", transactionId);

@@ -7,11 +7,13 @@
 #
 # The way the server is set up you shall be able to access the python web server using the URL http://localhost:5001
 
-from flask import Flask, render_template, json, send_from_directory
+from urllib import request
+
+from flask import Flask, render_template, json, send_from_directory, session, abort
 from pathlib import Path
 import requests
 
-from credentials import client_id, client_secret, access_token_url
+from credentials import client_id, client_secret, web_sdk_token_url
 
 
 payload = {
@@ -27,6 +29,8 @@ headers = {
 }
 
 app = Flask(__name__, static_folder="static")
+app.config["SECRET_KEY"] = "use-a-long-random-secret-here"  # use env var in prod
+
 
 # Defines the path to where the node modules are kept
 NODE_MODULES = Path(__file__).parent / "node_modules"
@@ -57,25 +61,27 @@ def index():
 def base():
 
     # Make the POST request to get the access token
-    response = requests.post(access_token_url,
+    response = requests.post(web_sdk_token_url,
                          data=json.dumps(payload),
                          headers=headers)
 
     # Check the response
     if response.status_code == 200:
-        print("Access token received:")
+        print("Web sdk token and transaction id received:")
         print(response.json())
     else:
         print(f"Request failed with status code {response.status_code}")
         print(response.text)
         return {"error": response.text}, 400
 
-    access_token = response.json()["access_token"]
-    print(access_token)
+    websdk_token = response.json()["websdk_token"]
+    session["transaction_id"] = response.json()["transaction_id"]
+    print(websdk_token)
+    print(session["transaction_id"])
 
     return render_template(
         "idverification.html",
-        app_token=access_token
+        web_sdk_token=websdk_token
     )
 
 @app.route("/error")
@@ -86,6 +92,13 @@ def error():
 
 @app.route("/completed")
 def completed():
+
+    transaction_id_from_request = request.args.get("transactionId")
+    transaction_id_from_session = session.get("transaction_id")
+
+    if transaction_id_from_request != transaction_id_from_session:
+        abort(403, "Invalid transactionId")
+
     return render_template(
         "completed.html"
     )

@@ -1,0 +1,14 @@
+services:
+  web-id-verification:
+    image: 365id/web-id-verification
+    build:
+      context: .
+      secrets:
+        - npmrc
+    ports:
+      - "5001:5001"
+    restart: unless-stopped
+
+secrets:
+  npmrc:
+    file: ${HOME}/.npmrc
