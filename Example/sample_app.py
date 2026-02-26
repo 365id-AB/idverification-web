@@ -7,9 +7,8 @@
 #
 # The way the server is set up you shall be able to access the python web server using the URL http://localhost:5001
 
-from urllib import request
 
-from flask import Flask, render_template, json, send_from_directory, session, abort
+from flask import Flask, render_template, json, send_from_directory, session, abort, request
 from pathlib import Path
 import requests
 
