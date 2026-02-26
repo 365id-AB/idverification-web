@@ -380,6 +380,22 @@ If we are unable to match the face, feedback will be sent with `FacematchFeedbac
 
 ## API
 
+Our SDK makes use of semantic versioning. X.Y.Z
+
+### X
+
+This is the major version, any increment to this version indicates that there are breaking changes in the API, if you decide to upgrade you will most likely need to adapt to these changes.
+
+### Y
+
+This is the minor version, increments implies we have added functionality but remain backwards compatible. You should not need to adapt your implementation unless you intend to support newly added features.
+
+### Z
+
+This is the revision version, increments implies bug fixes. You should not need to do any changes in your implementation after upgrading.
+
+## API Documentation
+
 [365id ID Verification Web API Documentation](https://365id-ab.github.io/idverification-web/)
 
 <br/>
