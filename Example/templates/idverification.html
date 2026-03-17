@@ -93,9 +93,9 @@
         }
       },
       startOptions
-    ).then(() => {
+    ).then(async () => {
       // The verification process was possible to start.
-      verification.show()   // We show the SDK views using the element id provided in the `.init()` call.
+      await verification.show()   // We show the SDK views using the element id provided in the `.init()` call.
     }).catch((error) => {
       console.error("Unable to start the id verification SDK")
       console.error(error.message)
