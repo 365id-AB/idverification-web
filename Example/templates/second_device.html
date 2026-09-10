@@ -9,12 +9,17 @@
         <div id="scanItem"></div>
         <script type="module">
             import { IdVerification365Id } from "./vendor/index.js";
+
+            const initOptions = {
+                languageTag: "sv-se"
+            };
+
             const verification = new IdVerification365Id()
 
                 verification.init(
                     "scanItem",
                     window.location.origin + "/public",
-                    { language: "en", countryCode: "us" },
+                    initOptions,
                 );
 
             // Read URL parameters
