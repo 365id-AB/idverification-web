@@ -2,8 +2,10 @@
 
 # This is a Example application that demonstrates how it is possible to use the 365id WEB Id Verification SDK
 #
-# It imports the License Key i.e Client Id and Client Secret from the file credentials.py
-# It uses the crentials to get an access token that then is used to start the WEB SDK.
+# It reads the License Key i.e Client Id and Client Secret, plus the rest of the settings,
+# from the environment via credentials.py. When run with Docker Compose the credentials are
+# injected as Docker secrets and the remaining settings as environment variables.
+# It uses the credentials to get an access token that then is used to start the WEB SDK.
 #
 # The way the server is set up you shall be able to access the python web server using the URL http://localhost:5001
 
@@ -12,14 +14,21 @@ from flask import Flask, render_template, json, send_from_directory, session, ab
 from pathlib import Path
 import requests
 
-from credentials import client_id, client_secret, web_sdk_token_url
+from credentials import (
+    client_id,
+    client_secret,
+    web_sdk_token_url,
+    allowed_origin,
+    transfer_device_domain_url,
+    flask_secret_key,
+)
 
 
 payload = {
     "client_id": client_id,
     "client_secret": client_secret,
-    "allowed_origin": "*://localhost/*",
-    "transfer_device_domain_url": "http://localhost:5001/transfer_to_second_device"
+    "allowed_origin": allowed_origin,
+    "transfer_device_domain_url": transfer_device_domain_url
 }
 
 headers = {
@@ -28,7 +37,7 @@ headers = {
 }
 
 app = Flask(__name__, static_folder="static")
-app.config["SECRET_KEY"] = "use-a-long-random-secret-here"  # use env var in prod
+app.config["SECRET_KEY"] = flask_secret_key
 
 
 # Defines the path to where the node modules are kept

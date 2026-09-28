@@ -9,6 +9,31 @@ services:
       - "5001:5001"
     restart: unless-stopped
 
+    # Credentials are exposed as files under /run/secrets and read by credentials.py.
+    # They are sourced from the environment rather than from files on disk, so this
+    # also works against a remote docker context, where a host path would not exist.
+    secrets:
+      - client_id
+      - client_secret
+
+    environment:
+      CLIENT_ID_FILE: /run/secrets/client_id
+      CLIENT_SECRET_FILE: /run/secrets/client_secret
+
+      # The rest of the payload/endpoint settings, also from .env.
+      WEB_SDK_TOKEN_URL: ${WEB_SDK_TOKEN_URL:-https://global-customer-frontend.365id.com/api/v1/websdktoken}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:?set ALLOWED_ORIGIN in .env}
+      TRANSFER_DEVICE_DOMAIN_URL: ${TRANSFER_DEVICE_DOMAIN_URL:?set TRANSFER_DEVICE_DOMAIN_URL in .env}
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY:-}
+
 secrets:
+  # Read locally by the build client and sent to the builder, so a host path is
+  # fine here even with a remote context.
   npmrc:
     file: ${HOME}/.npmrc
+
+  # Taken from the environment (see .env). Requires Compose v2.23 or later.
+  client_id:
+    environment: CLIENT_ID
+  client_secret:
+    environment: CLIENT_SECRET
