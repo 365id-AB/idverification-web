@@ -10,8 +10,10 @@
         <script type="module">
             import { IdVerification365Id } from "./vendor/index.js";
 
+            const locale = navigator.languages?.[0] ?? navigator.language ?? "en-US";
+
             const initOptions = {
-                languageTag: "sv-se"
+                languageTag: locale
             };
 
             const verification = new IdVerification365Id()

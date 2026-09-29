@@ -13,9 +13,11 @@
 
     const verification = new IdVerification365Id()
 
+    const locale = navigator.languages?.[0] ?? navigator.language ?? "en-US";
     const webSdkToken = "{{ web_sdk_token }}";
+
     const initOptions = {
-      languageTag: "sv-se"
+      languageTag: locale
     };
 
     // Read URL parameters
